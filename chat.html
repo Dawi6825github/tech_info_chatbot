@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot</title>
+  <style>
+    /* Add your CSS styles here */
+    .message {
+      margin: 5px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .user-message {
+      background-color: #d1f7d6;
+      text-align: right;
+    }
+    .bot-message {
+      background-color: #f1f1f1;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+<div id="chat-box"></div>
+<input type="text" id="user-input" placeholder="Ask me about technology companies..." />
+<button id="send-button">Send</button>
+
+<script>
+const sendButton = document.getElementById("send-button");
+const userInputField = document.getElementById("user-input");
+const chatBox = document.getElementById("chat-box");
+
+const companyData = [
+  { name: 'TechCorp', industry: 'Software', headquarters: 'New York, USA', employees: 5000 },
+  { name: 'DataSoft', industry: 'AI & Data Science', headquarters: 'San Francisco, USA', employees: 3000 },
+  { name: 'CloudNet', industry: 'Cloud Computing', headquarters: 'London, UK', employees: 1500 },
+  { name: 'InnovateX', industry: 'Software', headquarters: 'Berlin, Germany', employees: 2000 },
+  { name: 'QuantumTech', industry: 'Quantum Computing', headquarters: 'Toronto, Canada', employees: 100 },
+  { name: 'CyberCore', industry: 'Cybersecurity', headquarters: 'Sydney, Australia', employees: 800 },
+  { name: 'DevSoft', industry: 'Software Development', headquarters: 'Bangalore, India', employees: 1200 },
+  { name: 'BlockchainTech', industry: 'Blockchain', headquarters: 'Dubai, UAE', employees: 250 },
+  { name: 'GreenTech', industry: 'Renewable Energy', headquarters: 'Oslo, Norway', employees: 400 },
+  { name: 'FinTechCo', industry: 'Finance Technology', headquarters: 'Tokyo, Japan', employees: 5000 },
+];
+
+function displayMessage(message, sender) {
+  const messageElement = document.createElement("div");
+  messageElement.classList.add("message", `${sender}-message`);
+  messageElement.textContent = message;
+  chatBox.appendChild(messageElement);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function processUserInput() {
+  const userMessage = userInputField.value.trim();
+  if (userMessage === "") return;
+
+  displayMessage(userMessage, "user");
+  userInputField.value = "";
+  getBotResponse(userMessage);
+}
+
+function getBotResponse(userMessage) {
+  let botReply = "Sorry,briefly your question.";
+  if (userMessage.toLowerCase() || toUppercase().includes("hello" || "hi?" || "how are you?" || "hey?" || "oh? what's up?" || "what do you think?")) {
+    botReply = "Hi! How can I assist you today?";
+  } else if (userMessage.toLowerCase() || toUppercase().includes("search" )) {
+    const results = searchAndSortCompanies(userMessage);
+    botReply = results.length > 0 ? formatCompanyData(results) : "Sorry, no companies found.";
+  } else if (userMessage.includes("sort")) {
+    const results = searchAndSortCompanies(userMessage);
+    botReply = results.length > 0 ? formatCompanyData(results) : "Sorry, no companies found.";
+  }
+  displayMessage(botReply, "bot");
+}
+
+function searchAndSortCompanies(query) {
+  let result = companyData;
+
+  if (query.toLowerCase().includes("company")) {
+    result = companyData;
+  } else if (query.toLowerCase().includes("search")) {
+    const searchQuery = query.toLowerCase().replace("search", "").trim();
+    result = companyData.filter(company =>
+      company.name.toLowerCase().includes(searchQuery) ||
+      company.industry.toLowerCase().includes(searchQuery) ||
+      company.headquarters.toLowerCase().includes(searchQuery)
+    );
+  } else if (query.toLowerCase().includes("sort")) {
+    const sortOrder = query.toLowerCase().includes("ascending") ? 1 : -1;
+    result = [...companyData].sort((a, b) => (a.employees - b.employees) * sortOrder);
+  }
+
+  return result;
+}
+
+function formatCompanyData(companies) {
+  return companies.map(company => {
+    return `${company.name} - ${company.industry} - HQ: ${company.headquarters} - Employees: ${company.employees}`;
+  }).join("\n");
+}
+
+sendButton.addEventListener("click", processUserInput);
+
+userInputField.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    processUserInput();
+  }
+});
+</script>
+
+</body>
+</html>
